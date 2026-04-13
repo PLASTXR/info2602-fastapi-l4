@@ -17,6 +17,7 @@ ALGORITHM = "HS256"
 password_hash = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+
 # Converts plaintext password to encrypted password
 def encrypt_password(password:str):
     return password_hash.hash(password)
@@ -47,7 +48,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db:Ses
         user_role = payload.get("role", None)
         if user_id is None or user_role is None:
             raise credentials_exception
-    except InvalidTokenError:
+        user_id = int(user_id)
+    except (InvalidTokenError, TypeError, ValueError):
         raise credentials_exception
     user = None
 
